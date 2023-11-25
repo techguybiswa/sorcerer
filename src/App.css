@@ -1,0 +1,39 @@
+.COLOR_RED {
+  color: red;
+}
+.header {
+  font-size: 34px;
+}
+.button-save {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid #000;
+  border-radius: 5px;
+  color: #000; 
+  background-color: #fff; 
+  transition: background-color 0.3s ease, color 0.3s ease;
+  &:hover {
+    background-color: #000; 
+    color: #fff; 
+  }
+}
+.container {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.editor-container {
+  border: 1px solid #ccc;
+  cursor: text;
+  min-height: 200px;
+  padding: 10px;
+  width: 700px;
+}
+
