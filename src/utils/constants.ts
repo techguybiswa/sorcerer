@@ -43,5 +43,12 @@ export const mapPatternToModifier: Record<string, ModifierInterface> = {
     type: ModifierType.BLOCK,
     style: "header-one",
   },
-
+  "&": {
+    type: ModifierType.INLINE_STYLE,
+    style: "ITALIC",
+  },
+  "@": {
+    type: ModifierType.BLOCK,
+    style: "header-two",
+  },
 };
