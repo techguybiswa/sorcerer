@@ -4,7 +4,6 @@ import {
   SelectionState,
   Modifier,
   Editor,
-  convertToRaw,
 } from "draft-js";
 import "../App.css";
 import { useEffect, useRef, useState } from "react";
@@ -13,28 +12,23 @@ import {
   mapPatternToModifier,
   styleMap,
 } from "../utils/constants";
-import { getInitialState, startsWithPattern } from "../utils/utils";
+import {
+  getCurrentText,
+  getInitialState,
+  save,
+  startsWithPattern,
+} from "../utils/utils";
 
 function Sorcerer() {
   const [editorState, setEditorState] = useState(() => getInitialState());
   const editorRef = useRef<Editor | null>(null);
-
   useEffect(() => {
     focusOnEditor();
   });
-
   const focusOnEditor = () => {
     if (editorRef.current) {
       editorRef.current.focus();
     }
-  };
-
-  const save = () => {
-    localStorage.setItem(
-      "sorcerer_state",
-      JSON.stringify(convertToRaw(editorState.getCurrentContent())),
-    );
-    alert("Saved");
   };
 
   const getStylesByType = (type: ModifierType) =>
@@ -42,72 +36,85 @@ function Sorcerer() {
       .filter((v) => v.type === type)
       .map((v) => v.style);
 
-  const onChange = (editorState: EditorState) => {
-    const selection = editorState.getSelection();
+  const applyInlineStyleToCurrentBlock = (editorState: EditorState) => {
     const currentContent = editorState.getCurrentContent();
-    const currentBlock = currentContent.getBlockForKey(selection.getStartKey());
-    const textInCurrentBlock = currentBlock.getText();
-    const currentBlockType = currentBlock.getType();
+    const textInCurrentBlock = getCurrentText(editorState);
+    const pattern = textInCurrentBlock.split(" ")[0];
+    const currentModifier = mapPatternToModifier[pattern];
+    const currentBlockKey = editorState.getSelection().getFocusKey();
 
-    if (startsWithPattern(textInCurrentBlock)) {
-      const pattern = textInCurrentBlock.split(" ")[0];
-      const currentModifier = mapPatternToModifier[pattern];
-      const currentBlockKey = editorState.getSelection().getFocusKey();
-      const rangeToRemove = new SelectionState({
-        anchorKey: currentBlockKey,
-        anchorOffset: 0,
-        focusKey: currentBlockKey,
-        focusOffset: pattern.length,
-      });
-      const contentStateWithoutPattern = Modifier.removeRange(
-        currentContent,
-        rangeToRemove,
-        "forward",
-      );
-      const editorStateWithoutPattern = EditorState.push(
-        editorState,
-        contentStateWithoutPattern,
-        "remove-range",
-      );
-      const editorStateFocussed = EditorState.moveFocusToEnd(
-        editorStateWithoutPattern,
-      );
-      if (currentModifier.type === ModifierType.INLINE_STYLE) {
-        setEditorState(
-          RichUtils.toggleInlineStyle(
-            editorStateFocussed,
-            currentModifier.style,
-          ),
-        );
-      } else if (currentModifier.type === ModifierType.BLOCK)
-        setEditorState(
-          RichUtils.toggleBlockType(editorStateFocussed, currentModifier.style),
-        );
-      return "handled";
-    } else if (textInCurrentBlock === "") {
-      // on new line remove all style
-      const inlineStylesToToggle = getStylesByType(ModifierType.INLINE_STYLE);
-      const blocksToToggle = getStylesByType(ModifierType.BLOCK);
+    const rangeToRemove = new SelectionState({
+      anchorKey: currentBlockKey,
+      anchorOffset: 0,
+      focusKey: currentBlockKey,
+      focusOffset: pattern.length,
+    });
 
-      for (const inlineStyle of inlineStylesToToggle) {
-        if (editorState.getCurrentInlineStyle().has(inlineStyle)) {
-          setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
-          return "handled";
-        }
+    const contentStateWithoutPattern = Modifier.removeRange(
+      currentContent,
+      rangeToRemove,
+      "forward"
+    );
+
+    const editorStateWithoutPattern = EditorState.push(
+      editorState,
+      contentStateWithoutPattern,
+      "remove-range"
+    );
+
+    const editorStateFocussed = EditorState.moveFocusToEnd(
+      editorStateWithoutPattern
+    );
+
+    if (currentModifier.type === ModifierType.INLINE_STYLE) {
+      setEditorState(
+        RichUtils.toggleInlineStyle(editorStateFocussed, currentModifier.style)
+      );
+    } else if (currentModifier.type === ModifierType.BLOCK)
+      setEditorState(
+        RichUtils.toggleBlockType(editorStateFocussed, currentModifier.style)
+      );
+  };
+
+  const removeInlineStyleFromCurrentBlock = (editorState: EditorState) => {
+    const currentBlockType = RichUtils.getCurrentBlockType(editorState);
+
+    const inlineStylesToToggle = getStylesByType(ModifierType.INLINE_STYLE);
+    const blocksToToggle = getStylesByType(ModifierType.BLOCK);
+
+    for (const inlineStyle of inlineStylesToToggle) {
+      if (editorState.getCurrentInlineStyle().has(inlineStyle)) {
+        setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+        return "handled";
       }
-
-      for (const block of blocksToToggle) {
-        if (currentBlockType === block) {
-          setEditorState(
-            RichUtils.toggleBlockType(editorState, currentBlockType),
-          );
-          return "handled";
-        }
+    }
+    for (const block of blocksToToggle) {
+      if (currentBlockType === block) {
+        setEditorState(
+          RichUtils.toggleBlockType(editorState, currentBlockType)
+        );
+        return "handled";
       }
     }
 
     setEditorState(editorState);
-    return "not-handled";
+    return "handled";
+  };
+
+  const onChange = (editorState: EditorState) => {
+    const textInCurrentBlock = getCurrentText(editorState);
+
+    if (startsWithPattern(textInCurrentBlock)) {
+      applyInlineStyleToCurrentBlock(editorState);
+      return "handled";
+    } else if (textInCurrentBlock === "") {
+      // on new line remove all styles
+      removeInlineStyleFromCurrentBlock(editorState);
+      return "handled";
+    }
+
+    setEditorState(editorState);
+    return "handled";
   };
 
   return (
@@ -125,7 +132,7 @@ function Sorcerer() {
           />
         </div>
         <br />
-        <button className="button-save" onClick={save}>
+        <button className="button-save" onClick={() => save(editorState)}>
           Save
         </button>
       </div>
