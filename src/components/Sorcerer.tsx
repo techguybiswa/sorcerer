@@ -55,13 +55,13 @@ function Sorcerer() {
         rangeToRemove,
         "forward"
       );
-      const newStateWithoutPattern = EditorState.push(
+      const editorStateWithoutPattern = EditorState.push(
         editorState,
         contentStateWithoutPattern,
         "remove-range"
       );
       const editorStateFocussed = EditorState.moveFocusToEnd(
-        newStateWithoutPattern
+        editorStateWithoutPattern
       );
       if (currentModifier.type === ModifierType.INLINE_STYLE) {
         setEditorState(
