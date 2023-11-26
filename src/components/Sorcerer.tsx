@@ -29,7 +29,7 @@ function Sorcerer() {
   const save = () => {
     localStorage.setItem(
       "sorcerer_state",
-      JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+      JSON.stringify(convertToRaw(editorState.getCurrentContent())),
     );
     alert("Saved");
   };
@@ -53,26 +53,26 @@ function Sorcerer() {
       const contentStateWithoutPattern = Modifier.removeRange(
         currentContent,
         rangeToRemove,
-        "forward"
+        "forward",
       );
-      const newStateWithoutPattern = EditorState.push(
+      const editorStateWithoutPattern = EditorState.push(
         editorState,
         contentStateWithoutPattern,
-        "remove-range"
+        "remove-range",
       );
       const editorStateFocussed = EditorState.moveFocusToEnd(
-        newStateWithoutPattern
+        editorStateWithoutPattern,
       );
       if (currentModifier.type === ModifierType.INLINE_STYLE) {
         setEditorState(
           RichUtils.toggleInlineStyle(
             editorStateFocussed,
-            currentModifier.style
-          )
+            currentModifier.style,
+          ),
         );
       } else if (currentModifier.type === ModifierType.BLOCK)
         setEditorState(
-          RichUtils.toggleBlockType(editorStateFocussed, currentModifier.style)
+          RichUtils.toggleBlockType(editorStateFocussed, currentModifier.style),
         );
       return "handled";
     } else if (textInCurrentBlock === "") {
@@ -94,7 +94,7 @@ function Sorcerer() {
       for (const block of blocksToToggle) {
         if (currentBlockType === block) {
           setEditorState(
-            RichUtils.toggleBlockType(editorState, currentBlockType)
+            RichUtils.toggleBlockType(editorState, currentBlockType),
           );
           return;
         }
