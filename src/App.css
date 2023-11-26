@@ -38,12 +38,13 @@
   padding: 20px;
   width: 80%;
   border-radius: 10px;
-
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* The first part (0 4px 8px rgba(0, 0, 0, 0.1)) is a subtle drop shadow */
-  /* The second part (0 2px 4px rgba(0, 0, 0, 0.1)) adds a softer inner glow */
-  transition: box-shadow 0.3s ease; /* Optional: Add a smooth transition effect */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 .editor-container:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.2);
 }
