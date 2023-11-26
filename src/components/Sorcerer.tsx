@@ -88,7 +88,7 @@ function Sorcerer() {
       for (const inlineStyle of inlineStylesToToggle) {
         if (editorState.getCurrentInlineStyle().has(inlineStyle)) {
           setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
-          return;
+          return "handled";
         }
       }
       for (const block of blocksToToggle) {
@@ -96,7 +96,7 @@ function Sorcerer() {
           setEditorState(
             RichUtils.toggleBlockType(editorState, currentBlockType),
           );
-          return;
+          return "handled";
         }
       }
     }
