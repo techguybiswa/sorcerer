@@ -16,11 +16,7 @@ export const getInitialState = () => {
 export const save = (editorState: EditorState) => {
   localStorage.setItem(
     "sorcerer_state",
-<<<<<<< Updated upstream
-    JSON.stringify(convertToRaw(editorState.getCurrentContent())),
-=======
     JSON.stringify(convertToRaw(editorState.getCurrentContent()))
->>>>>>> Stashed changes
   );
   alert("Saved");
 };
@@ -34,8 +30,4 @@ export const getCurrentText = (editorState: EditorState) => {
   const currentBlock = getCurrentBlock(editorState);
   const blockText = currentBlock.getText();
   return blockText;
-<<<<<<< Updated upstream
 };
-=======
-};
->>>>>>> Stashed changes
