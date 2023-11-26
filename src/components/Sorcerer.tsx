@@ -18,14 +18,17 @@ import { getInitialState, startsWithPattern } from "../utils/utils";
 function Sorcerer() {
   const [editorState, setEditorState] = useState(() => getInitialState());
   const editorRef = useRef<Editor | null>(null);
+
   useEffect(() => {
     focusOnEditor();
   });
+
   const focusOnEditor = () => {
     if (editorRef.current) {
       editorRef.current.focus();
     }
   };
+
   const save = () => {
     localStorage.setItem(
       "sorcerer_state",
@@ -33,6 +36,12 @@ function Sorcerer() {
     );
     alert("Saved");
   };
+
+  const getStylesByType = (type: ModifierType) =>
+    Object.values(mapPatternToModifier)
+      .filter((v) => v.type === type)
+      .map((v) => v.style);
+
   const onChange = (editorState: EditorState) => {
     const selection = editorState.getSelection();
     const currentContent = editorState.getCurrentContent();
@@ -76,12 +85,7 @@ function Sorcerer() {
         );
       return "handled";
     } else if (textInCurrentBlock === "") {
-      // on new line remove all styles
-      const getStylesByType = (type: ModifierType) =>
-        Object.values(mapPatternToModifier)
-          .filter((v) => v.type === type)
-          .map((v) => v.style);
-
+      // on new line remove all style
       const inlineStylesToToggle = getStylesByType(ModifierType.INLINE_STYLE);
       const blocksToToggle = getStylesByType(ModifierType.BLOCK);
 
@@ -91,6 +95,7 @@ function Sorcerer() {
           return "handled";
         }
       }
+
       for (const block of blocksToToggle) {
         if (currentBlockType === block) {
           setEditorState(

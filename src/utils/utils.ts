@@ -1,9 +1,9 @@
-import { EditorState, convertFromRaw } from "draft-js";
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { mapPatternToModifier } from "./constants";
 
 export const startsWithPattern = (text: string): boolean => {
   return Object.keys(mapPatternToModifier).some((k) =>
-    text.startsWith(k + " ")
+    text.startsWith(k + " "),
   );
 };
 export const getInitialState = () => {
@@ -11,4 +11,23 @@ export const getInitialState = () => {
   return existingState
     ? EditorState.createWithContent(convertFromRaw(JSON.parse(existingState)))
     : EditorState.createEmpty();
+};
+
+export const save = (editorState: EditorState) => {
+  localStorage.setItem(
+    "sorcerer_state",
+    JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+  );
+  alert("Saved");
+};
+
+const getCurrentBlock = (editorState: EditorState) => {
+  const currentSelection = editorState.getSelection();
+  const blockKey = currentSelection.getStartKey();
+  return editorState.getCurrentContent().getBlockForKey(blockKey);
+};
+export const getCurrentText = (editorState: EditorState) => {
+  const currentBlock = getCurrentBlock(editorState);
+  const blockText = currentBlock.getText();
+  return blockText;
 };
