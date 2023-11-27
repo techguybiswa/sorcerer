@@ -70,6 +70,9 @@ function Sorcerer() {
 
     const editorStateWithoutPattern = getEditorStateWithoutPattern(editorState);
     if (currentModifier.type === ModifierType.INLINE_STYLE) {
+      // now that i have a bit more experience with draftjs I feel ideally we should re-write 
+      // this using applyInlineStyle instead of relying on toggleInlineStyle as the former method
+      // will be able to handle many more use cases and will be extendible more easily.
       setEditorState(
         RichUtils.toggleInlineStyle(
           editorStateWithoutPattern,
