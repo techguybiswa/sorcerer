@@ -52,13 +52,13 @@ function Sorcerer() {
     const contentStateWithoutPattern = Modifier.removeRange(
       currentContent,
       rangeToRemove,
-      "forward",
+      "forward"
     );
 
     const editorStateWithoutPattern = EditorState.push(
       editorState,
       contentStateWithoutPattern,
-      "remove-range",
+      "remove-range"
     );
 
     return EditorState.moveFocusToEnd(editorStateWithoutPattern);
@@ -73,15 +73,15 @@ function Sorcerer() {
       setEditorState(
         RichUtils.toggleInlineStyle(
           editorStateWithoutPattern,
-          currentModifier.style,
-        ),
+          currentModifier.style
+        )
       );
     } else if (currentModifier.type === ModifierType.BLOCK)
       setEditorState(
         RichUtils.toggleBlockType(
           editorStateWithoutPattern,
-          currentModifier.style,
-        ),
+          currentModifier.style
+        )
       );
   };
 
@@ -100,7 +100,7 @@ function Sorcerer() {
     for (const block of blocksToToggle) {
       if (currentBlockType === block) {
         setEditorState(
-          RichUtils.toggleBlockType(editorState, currentBlockType),
+          RichUtils.toggleBlockType(editorState, currentBlockType)
         );
         return "handled";
       }

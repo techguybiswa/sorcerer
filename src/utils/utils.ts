@@ -16,7 +16,7 @@ export const getInitialState = () => {
 export const save = (editorState: EditorState) => {
   localStorage.setItem(
     "sorcerer_state",
-    JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+    JSON.stringify(convertToRaw(editorState.getCurrentContent()))
   );
   alert("Saved");
 };
